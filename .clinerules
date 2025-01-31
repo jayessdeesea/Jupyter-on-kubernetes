@@ -1,0 +1,61 @@
+Project: JupyterHub on Kubernetes
+
+Description:
+A Kubernetes-based JupyterHub deployment that provides multi-user Jupyter notebook environments.
+
+Key Components:
+- JupyterHub Helm Chart (version 3.2.1)
+- JupyterHub version 4.0.2
+- Kubernetes namespace: jupyterhub
+- Jupyter Notebook Image: jupyter/datascience-notebook
+  * Includes Python, R, and Julia support
+  * Pre-installed with common data science packages
+
+Configuration Details:
+1. Authentication:
+   - Uses dummy authenticator
+   - Allows anyone to sign up
+   - Admin user: admin
+
+2. Resource Allocation (per user):
+   - CPU: 1 core limit, 0.5 core guarantee
+   - Memory: 1GB limit, 512MB guarantee
+   - Storage: 10GB capacity using standard storage class
+
+3. Networking:
+   - Service Type: LoadBalancer
+   - Access URL: http://localhost
+   - Default Ports:
+     * Main HTTP port: 80 (proxy-public service)
+     * Hub API port: 8081 (internal hub service)
+     * HTTPS port: 443 (when HTTPS is enabled)
+
+Required Tools:
+- Docker Desktop with Kubernetes enabled
+- kubectl CLI
+- Helm package manager
+
+Key Files:
+- config.yaml: Main configuration file for JupyterHub deployment
+
+Deployment Commands:
+```bash
+# Add JupyterHub Helm repository
+helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
+helm repo update
+
+# Install/upgrade JupyterHub
+helm upgrade --install jupyterhub jupyterhub/jupyterhub \
+  --version=3.2.1 \
+  --values config.yaml \
+  --create-namespace \
+  --namespace jupyterhub
+```
+
+Status Check Commands:
+```bash
+# Check pod status
+kubectl --namespace=jupyterhub get pods
+
+# Check service status
+kubectl --namespace=jupyterhub get service proxy-public

@@ -1,0 +1,31 @@
+# This file can be used to customize the JupyterHub deployment
+singleuser:
+  image:
+    name: jupyter/datascience-notebook
+    tag: latest
+    pullPolicy: IfNotPresent
+  # Default resources for user pods
+  cpu:
+    limit: 1
+    guarantee: 0.5
+  memory:
+    limit: 1G
+    guarantee: 512M
+  storage:
+    capacity: 10Gi
+    dynamic:
+      storageClass: hostpath
+
+hub:
+  config:
+    Authenticator:
+      admin_users:
+        - admin
+    # Allow anyone to sign up
+    JupyterHub:
+      authenticator_class: dummy
+
+proxy:
+  # Set service type to LoadBalancer for external access
+  service:
+    type: LoadBalancer
